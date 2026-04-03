@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blossom Games — Download</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --petal: #f4c2c2;
+    --rose: #e07b8a;
+    --deep: #2a1a1e;
+    --moss: #4a6741;
+    --mist: #d8e8d2;
+    --gold: #c9a96e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--deep);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Soft petal background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(244,194,194,0.35) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(216,232,210,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 90% 90%, rgba(201,169,110,0.12) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating petals */
+  .petals {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .petal {
+    position: absolute;
+    border-radius: 50% 10% 50% 10%;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  .petal:nth-child(1)  { width:10px;height:14px; background:#f4c2c2; left:8%;  animation-duration:14s; animation-delay:0s;   top:-20px; transform:rotate(20deg); }
+  .petal:nth-child(2)  { width:7px; height:11px; background:#e8b4b8; left:20%; animation-duration:18s; animation-delay:3s;   top:-20px; transform:rotate(-30deg); }
+  .petal:nth-child(3)  { width:12px;height:16px; background:#f9dada; left:40%; animation-duration:12s; animation-delay:6s;   top:-20px; transform:rotate(45deg); }
+  .petal:nth-child(4)  { width:8px; height:12px; background:#f4c2c2; left:60%; animation-duration:16s; animation-delay:1s;   top:-20px; transform:rotate(-15deg); }
+  .petal:nth-child(5)  { width:9px; height:13px; background:#e0b4b4; left:75%; animation-duration:20s; animation-delay:8s;   top:-20px; transform:rotate(60deg); }
+  .petal:nth-child(6)  { width:6px; height:10px; background:#f4c2c2; left:88%; animation-duration:15s; animation-delay:4s;   top:-20px; transform:rotate(-45deg); }
+  .petal:nth-child(7)  { width:11px;height:15px; background:#fce4e4; left:30%; animation-duration:22s; animation-delay:10s;  top:-20px; transform:rotate(10deg); }
+  .petal:nth-child(8)  { width:7px; height:11px; background:#e8b4b8; left:55%; animation-duration:17s; animation-delay:2s;   top:-20px; transform:rotate(-20deg); }
+
+  @keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* Layout */
+  .page {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 60px 24px 80px;
+  }
+
+  /* Header badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(224,123,138,0.25);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 32px;
+    backdrop-filter: blur(8px);
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--rose);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity:1; }
+    50% { transform: scale(1.4); opacity:0.6; }
+  }
+
+  /* Flower icon */
+  .flower-icon {
+    font-size: 64px;
+    line-height: 1;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.1s ease both, sway 6s ease-in-out infinite;
+    display: block;
+    text-align: center;
+  }
+  @keyframes sway {
+    0%,100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--deep);
+    text-align: center;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s 0.15s ease both;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: #6b5057;
+    text-align: center;
+    max-width: 440px;
+    line-height: 1.65;
+    margin-bottom: 52px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  /* Card */
+  .card {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 24px;
+    box-shadow:
+      0 2px 4px rgba(42,26,30,0.04),
+      0 8px 24px rgba(42,26,30,0.07),
+      0 0 0 1px rgba(224,123,138,0.06) inset;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    animation: fadeUp 0.7s 0.25s ease both;
+  }
+
+  .card-section {
+    padding: 32px;
+  }
+  .card-section + .card-section {
+    border-top: 1px solid rgba(42,26,30,0.07);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 10px;
+  }
+
+  .section-desc {
+    font-size: 0.875rem;
+    color: #7a6066;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  /* Download button */
+  .btn-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--rose) 0%, #c4677a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    box-shadow: 0 4px 16px rgba(224,123,138,0.4), 0 1px 2px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-download::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(224,123,138,0.5), 0 2px 4px rgba(0,0,0,0.1);
+    filter: brightness(1.05);
+  }
+  .btn-download:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(224,123,138,0.3);
+  }
+  .btn-icon { font-size: 18px; }
+
+  /* Copy URL section */
+  .copy-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .copy-input {
+    flex: 1;
+    background: rgba(42,26,30,0.04);
+    border: 1px solid rgba(42,26,30,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: #4a3038;
+    outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+    user-select: all;
+  }
+  .btn-copy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--mist);
+    border: 1px solid rgba(74,103,65,0.2);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--moss);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-copy:hover {
+    background: #c8dcc2;
+    transform: translateY(-1px);
+  }
+  .btn-copy.copied {
+    background: var(--moss);
+    color: #fff;
+    border-color: var(--moss);
+  }
+
+  .copy-hint {
+    font-size: 0.78rem;
+    color: #9a8088;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .copy-hint strong { color: #6b5057; font-weight: 500; }
+
+  /* Steps */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: fadeUp 0.7s 0.35s ease both;
+    width: 100%;
+    max-width: 520px;
+    margin-top: 32px;
+  }
+  .steps-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: #6b5057;
+    margin-bottom: 4px;
+    font-style: italic;
+    padding-left: 4px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 14px;
+    padding: 14px 18px;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s ease;
+  }
+  .step:hover { background: rgba(255,255,255,0.7); }
+  .step-num {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--petal), #f9dada);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--rose);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text {
+    font-size: 0.88rem;
+    color: #5a4248;
+    line-height: 1.55;
+  }
+  .step-text strong { color: var(--deep); font-weight: 500; }
+  .step-text code {
+    background: rgba(42,26,30,0.07);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.82rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #b09098;
+    animation: fadeUp 0.7s 0.45s ease both;
+  }
+  .footer a { color: var(--rose); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--deep);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="petals" aria-hidden="true">
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div>
+</div>
+
+<div class="page">
+
+  <div class="badge"><span class="badge-dot"></span>Made by ET</div>
+
+  <span class="flower-icon" aria-hidden="true">🌸</span>
+
+  <h1>Get <em>Blossom Games</em></h1>
+  <p class="subtitle">A single HTML file containing a full collection of games. Download it once and play anywhere — no internet required.</p>
+
+  <div class="card">
+
+    <!-- Direct download -->
+    <div class="card-section">
+      <p class="section-label">One-click Download</p>
+      <p class="section-desc">Downloads the file directly from our CDN. Works in any modern browser.</p>
+      <a
+        class="btn-download"
+        href="https://cdn.jsdelivr.net/gh/blossom-games/blossomgames@latest/blossomsinglefile.html"
+        download="blossom-games.html"
+      >
+        <span class="btn-icon">⬇</span>
+        Download Blossom Games
+      </a>
+    </div>
+
+    <!-- Copy & paste method -->
+    <div class="card-section">
+      <p class="section-label">Manual Method — Paste in Browser</p>
+      <p class="section-desc">Copy the address below and paste it directly into your browser's address bar.</p>
+
+      <div class="copy-wrap">
+        <input
+          class="copy-input"
+          id="dataUrl"
+          type="text"
+          readonly
+          value="data:text/html,<html><body style=&quot;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;&quot;><button id=&quot;dl&quot; style=&quot;padding:20px;cursor:pointer;font-size:18px;&quot;>Download Blossom Games HTML</button><script>document.getElementById('dl').onclick=async()=>{const url='https://cdn.jsdelivr.net/gh/blossom-games/blossomgames@latest/autoupdate.html';try{const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);const h=await r.text();const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='blossom.html';a.click();}catch(err){alert('Download failed: '+err.message);};};<\/script></body></html>"
+        />
+        <button class="btn-copy" id="copyBtn" onclick="copyUrl()">
+          <span id="copyIcon">⎘</span>
+          <span id="copyLabel">Copy</span>
+        </button>
+      </div>
+
+      <p class="copy-hint">
+        After copying, <strong>paste into your browser's address bar</strong> (where you'd type a website URL) and press <code>Enter</code>.
+        A download button will appear on the page.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <p class="steps-title">How it works</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <strong>Click the download button</strong> above — the file saves as <code>blossom-games.html</code> to your Downloads folder.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <strong>Open the file</strong> by double-clicking it. It'll open straight in your browser — nothing to install.
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footer">
+    Blossom Games 2026
+  </p>
+
+</div>
+
+<div class="toast" id="toast">✓ &nbsp;Copied to clipboard</div>
+
+<script>
+  function copyUrl() {
+    const val = document.getElementById('dataUrl').value;
+    navigator.clipboard.writeText(val).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const icon = document.getElementById('copyIcon');
+      const label = document.getElementById('copyLabel');
+      btn.classList.add('copied');
+      icon.textContent = '✓';
+      label.textContent = 'Copied!';
+      showToast('Copied to clipboard');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        icon.textContent = '⎘';
+        label.textContent = 'Copy';
+      }, 2500);
+    }).catch(() => {
+      // Fallback
+      const input = document.getElementById('dataUrl');
+      input.select();
+      document.execCommand('copy');
+      showToast('Copied!');
+    });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✓  ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+
+</body>
+</html>
