@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Downloader</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --accent: #c8ff00;
+      --accent2: #00d4ff;
+      --text: #e8e8f0;
+      --muted: #5a5a7a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,255,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,255,0,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 48px 52px;
+      max-width: 520px;
+      width: 90%;
+      position: relative;
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Corner accents */
+    .card::before, .card::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+    }
+    .card::before {
+      top: -1px; left: -1px;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+    .card::after {
+      bottom: -1px; right: -1px;
+      border-bottom: 2px solid var(--accent2);
+      border-right: 2px solid var(--accent2);
+    }
+
+    .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    .files {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .file-row.ready { border-color: var(--border); }
+    .file-row.downloading { border-color: var(--accent2); }
+    .file-row.done { border-color: var(--accent); }
+    .file-row.error { border-color: #ff4060; }
+
+    .file-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-status {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+    .file-row.downloading .file-status { color: var(--accent2); }
+    .file-row.done .file-status { color: var(--accent); }
+    .file-row.error .file-status { color: #ff4060; }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .file-row.downloading .status-dot {
+      background: var(--accent2);
+      animation: pulse 0.8s ease-in-out infinite;
+    }
+    .file-row.done .status-dot { background: var(--accent); }
+    .file-row.error .status-dot { background: #ff4060; }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn .btn-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: translateX(-100%);
+    }
+    .btn:not(:disabled):hover .btn-shimmer {
+      animation: shimmer 0.6s ease forwards;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.7;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+    @keyframes shimmer {
+      to { transform: translateX(100%); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <p class="label">// CloudMoonApp / web</p>
+  <h1>Download<br>SVG Assets</h1>
+  <p class="subtitle">Fetches both files simultaneously from<br>the GitHub repository.</p>
+
+  <div class="files">
+    <div class="file-row ready" id="row-play">
+      <div class="file-icon">◈</div>
+      <div class="file-info">
+        <div class="file-name">play-2604131056.svg</div>
+        <div class="file-status" id="status-play">READY</div>
+      </div>
+      <div class="status-dot" id="dot-play"></div>
+    </div>
+
+    <div class="file-row ready" id="row-main">
+      <div class="file-icon">◈</div>
+      <div class="file-info">
+        <div class="file-name">main-2604131056.svg</div>
+        <div class="file-status" id="status-main">READY</div>
+      </div>
+      <div class="status-dot" id="dot-main"></div>
+    </div>
+  </div>
+
+  <button class="btn" id="downloadBtn" onclick="downloadAll()">
+    <span class="btn-shimmer"></span>
+    <span class="btn-inner">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2v8M5 7l3 3 3-3M2 12h12" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Download Both Files
+    </span>
+  </button>
+
+  <p class="note">
+    Files are fetched from <strong style="color:var(--text)">raw.githubusercontent.com</strong> and
+    saved directly to your downloads folder. Both transfers run in parallel.
+  </p>
+</div>
+
+<script>
+  const FILES = [
+    {
+      id: 'play',
+      url: 'https://raw.githubusercontent.com/CloudMoonApp/web/main/play-2604131056.svg',
+      filename: 'play-2604131056.svg'
+    },
+    {
+      id: 'main',
+      url: 'https://raw.githubusercontent.com/CloudMoonApp/web/main/main-2604131056.svg',
+      filename: 'main-2604131056.svg'
+    }
+  ];
+
+  function setState(id, state, msg) {
+    const row    = document.getElementById('row-' + id);
+    const status = document.getElementById('status-' + id);
+    row.className = 'file-row ' + state;
+    status.textContent = msg;
+  }
+
+  async function fetchAndDownload({ id, url, filename }) {
+    setState(id, 'downloading', 'DOWNLOADING…');
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      setState(id, 'done', 'SAVED ✓');
+    } catch (err) {
+      setState(id, 'error', 'ERROR: ' + err.message);
+    }
+  }
+
+  async function downloadAll() {
+    const btn = document.getElementById('downloadBtn');
+    btn.disabled = true;
+
+    // Reset states
+    FILES.forEach(f => setState(f.id, 'ready', 'READY'));
+
+    // Fetch both in parallel
+    await Promise.allSettled(FILES.map(fetchAndDownload));
+
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>
